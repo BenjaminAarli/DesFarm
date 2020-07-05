@@ -1,0 +1,146 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://player.gd" type="Script" id=4]
+[ext_resource path="res://plant.tscn" type="PackedScene" id=5]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Spatial
+
+"
+
+[sub_resource type="OpenSimplexNoise" id=2]
+period = 1.0
+
+[sub_resource type="NoiseTexture" id=3]
+seamless = true
+noise = SubResource( 2 )
+
+[sub_resource type="SpatialMaterial" id=4]
+flags_do_not_receive_shadows = true
+albedo_texture = SubResource( 3 )
+uv1_scale = Vector3( 20, 20, 1 )
+
+[sub_resource type="CubeMesh" id=5]
+material = SubResource( 4 )
+size = Vector3( 100, 2, 100 )
+
+[sub_resource type="ConcavePolygonShape" id=6]
+data = PoolVector3Array( -50, 1, 50, 50, 1, 50, -50, -1, 50, 50, 1, 50, 50, -1, 50, -50, -1, 50, 50, 1, -50, -50, 1, -50, 50, -1, -50, -50, 1, -50, -50, -1, -50, 50, -1, -50, 50, 1, 50, 50, 1, -50, 50, -1, 50, 50, 1, -50, 50, -1, -50, 50, -1, 50, -50, 1, -50, -50, 1, 50, -50, -1, -50, -50, 1, 50, -50, -1, 50, -50, -1, -50, 50, 1, 50, -50, 1, 50, 50, 1, -50, -50, 1, 50, -50, 1, -50, 50, 1, -50, -50, -1, 50, 50, -1, 50, -50, -1, -50, 50, -1, 50, 50, -1, -50, -50, -1, -50 )
+
+[sub_resource type="SpatialMaterial" id=7]
+flags_unshaded = true
+
+[sub_resource type="CubeMesh" id=8]
+material = SubResource( 7 )
+
+[sub_resource type="BoxShape" id=9]
+extents = Vector3( 1, 2, 1 )
+
+[sub_resource type="Environment" id=10]
+background_mode = 1
+ambient_light_color = Color( 1, 1, 1, 1 )
+
+[node name="Game" type="Spatial"]
+script = SubResource( 1 )
+
+[node name="Level" type="Spatial" parent="."]
+
+[node name="Floor" type="MeshInstance" parent="Level"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+mesh = SubResource( 5 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Level/Floor"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Level/Floor/StaticBody"]
+shape = SubResource( 6 )
+
+[node name="player" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 2.38418e-07, 0, 1, 0, -2.38418e-07, 0, 1, 0, 3, 1 )
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="player"]
+transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
+mesh = SubResource( 8 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="player"]
+shape = SubResource( 9 )
+
+[node name="Pivot" type="Spatial" parent="player"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.298, 2.011, -0.079 )
+visible = false
+
+[node name="Camera" type="Camera" parent="player/Pivot"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, -0.000257969, -1.7643e-05, -5.41657e-06 )
+
+[node name="UI" type="Control" parent="player"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="player/UI"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -2.0
+margin_top = -2.0
+margin_right = 2.0
+margin_bottom = 2.0
+mouse_filter = 2
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 10 )
+
+[node name="Plants" type="Spatial" parent="."]
+
+[node name="Plant" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, -6 )
+
+[node name="Plant2" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, -1 )
+
+[node name="Plant3" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 4 )
+
+[node name="Plant4" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 9 )
+
+[node name="Plant5" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 14 )
+growth = 3
+watered = true
+
+[node name="Plant6" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 19 )
+
+[node name="Plant7" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, 24 )
+
+[node name="Plant8" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, -6 )
+
+[node name="Plant9" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, -1 )
+
+[node name="Plant10" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, 4 )
+
+[node name="Plant11" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, 9 )
+
+[node name="Plant12" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, 14 )
+
+[node name="Plant13" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, 19 )
+
+[node name="Plant14" parent="Plants" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, 24 )
