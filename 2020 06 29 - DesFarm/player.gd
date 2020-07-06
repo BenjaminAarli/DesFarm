@@ -11,11 +11,12 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	pass # Replace with function body.
 
-
-
 func _unhandled_input(event):
-	if Input.is_key_pressed(KEY_ESCAPE):
-		get_tree().quit()
+	if Input.is_action_just_pressed("pause"):
+		var p = load("res://Pause.tscn")
+		get_tree().get_root().get_child(0).add_child(p.instance())
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		get_tree().paused = true
 	
 	if event is InputEventMouseMotion:
 		rotate_y(-event.relative.x / 300)
@@ -36,10 +37,9 @@ func movement(delta):
 		motion.y -= (SPD * delta) / 1.2
 	else:
 		motion.y = 0
-	
+
 	move_and_slide(motion, Vector3.UP)
 	pass
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
