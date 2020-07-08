@@ -1,0 +1,13 @@
+[remap]
+
+importer="qodot.map"
+type="Resource"
+path="res://.import/testmap01.4.map-66fc83063f931793dfb0c6ba40dfbf7e.tres"
+
+[deps]
+
+source_file="res://models/maps/autosave/testmap01.4.map"
+dest_files=[ "res://.import/testmap01.4.map-66fc83063f931793dfb0c6ba40dfbf7e.tres" ]
+
+[params]
+
