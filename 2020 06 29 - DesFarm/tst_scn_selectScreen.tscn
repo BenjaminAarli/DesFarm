@@ -1,0 +1,455 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://textures/sun.png" type="Texture" id=2]
+[ext_resource path="res://textures/eye.jpg" type="Texture" id=3]
+[ext_resource path="res://scn_mainmenu.tscn" type="PackedScene" id=4]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Spatial
+
+export(PackedScene) var next_scene = PackedScene.new()
+
+func process():
+	
+	pass
+"
+
+[sub_resource type="Environment" id=11]
+fog_enabled = true
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Camera
+
+## Important details
+# 1 - Parent must be a Timer node
+
+export(PackedScene) onready var next_scene = get_parent().get_parent().next_scene
+
+# Current Logo
+var current_logo = 0
+# Fade in out (in = true | out = false)
+var fade_io = true
+
+var time_til_start = 2
+
+func _ready():
+	print(next_scene)
+	
+	# Set the timer to 3 seconds
+	get_parent().start(3)
+	get_parent().stop()
+	
+	# Set pos and alpha for logos
+	for c in range(get_child_count()):
+		get_child(c).modulate.a = 0
+		get_child(c).global_position = Vector2(0, 0)
+	
+	pass
+
+func _process(delta):
+	if time_til_start > 0:
+		time_til_start -= 1 * delta
+	else:
+		if current_logo < get_child_count(): 
+			if get_child(current_logo).modulate.a < 1 and fade_io: # Fading in...
+				fade_in(delta, get_child(current_logo))
+			elif fade_io: # Finished Fading in...
+				fade_io = false
+				get_parent().start(3) 
+			pass
+			if get_child(current_logo).modulate.a > 0 and fade_io == false: # Get ready to Fade Out...
+				if get_parent().time_left <= 0: # Wait time_left seconds before fading out
+					if fade_out(delta, get_child(current_logo)):
+						next_fade()
+		else:  # <--- END #
+			# !END PART! # 
+			if environment.adjustment_enabled == false:
+				environment.adjustment_enabled = true
+			if environment.adjustment_brightness > 0.0:
+				environment.adjustment_brightness -= 1 * delta
+				environment.adjustment_contrast += 1 * delta
+			else:
+#				yield(get_tree().create_timer(3), \"timeout\") # Wait 3 seconds
+				get_tree().change_scene_to(next_scene)
+			# !END PART! #
+		pass
+
+func fade_in(delta, logo):
+	logo.modulate.a += 1 * delta
+
+func fade_out(delta, logo):
+	logo.modulate.a -= 1 * delta
+	if logo.modulate.a <= 0:
+		return true
+
+func next_fade():
+	current_logo += 1
+	fade_io = true
+	get_parent().start(3)
+	get_parent().stop()
+"
+
+[sub_resource type="CubeMesh" id=3]
+size = Vector3( 32, 2, 32 )
+
+[sub_resource type="CubeMesh" id=4]
+size = Vector3( 1, 8, 32 )
+
+[sub_resource type="CubeMesh" id=5]
+size = Vector3( 1.1, 4, 8 )
+
+[sub_resource type="SpatialMaterial" id=6]
+flags_transparent = true
+albedo_color = Color( 0.894118, 0.658824, 0.658824, 0.431373 )
+
+[sub_resource type="QuadMesh" id=7]
+material = SubResource( 6 )
+size = Vector2( 12, 8 )
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends Spatial
+
+func _process(delta):
+	rotate_y(-0.025)
+"
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends Spatial
+
+var time = 5
+
+func _process(delta):
+	if time > 0: 
+		time += -1 * delta
+	else:
+		global_transform.origin.z -= 20 * delta
+	pass
+
+"
+
+[node name="Spatial" type="Spatial"]
+script = SubResource( 1 )
+next_scene = ExtResource( 4 )
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="Camera" type="Camera" parent="Timer"]
+transform = Transform( 0.58523, -0.0681277, 0.808, 0.115631, 0.993292, -4.09576e-08, -0.80258, 0.0934299, 0.589182, -5.9783, 1.02255, 9.97025 )
+environment = SubResource( 11 )
+current = true
+script = SubResource( 2 )
+
+[node name="logo_01" type="Node2D" parent="Timer/Camera"]
+position = Vector2( -352, -128 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Control" type="Control" parent="Timer/Camera/logo_01"]
+margin_right = 1024.0
+margin_bottom = 600.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Timer/Camera/logo_01/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_bottom = 200.0
+text = "Made with the Godot Engine <3"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sprite" type="Sprite" parent="Timer/Camera/logo_01"]
+position = Vector2( 512, 288 )
+scale = Vector2( 3, 3 )
+texture = ExtResource( 1 )
+
+[node name="logo_02" type="Node2D" parent="Timer/Camera"]
+position = Vector2( -88, -120 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Control" type="Control" parent="Timer/Camera/logo_02"]
+margin_right = 1024.0
+margin_bottom = 600.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Timer/Camera/logo_02/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_bottom = 200.0
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sprite" type="Sprite" parent="Timer/Camera/logo_02"]
+position = Vector2( 512, 288 )
+scale = Vector2( 3, 3 )
+texture = ExtResource( 2 )
+
+[node name="logo_03" type="Node2D" parent="Timer/Camera"]
+position = Vector2( 144, -112 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Control" type="Control" parent="Timer/Camera/logo_03"]
+margin_right = 1024.0
+margin_bottom = 600.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Timer/Camera/logo_03/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sprite" type="Sprite" parent="Timer/Camera/logo_03"]
+position = Vector2( 512, 288 )
+scale = Vector2( 0.16, 0.16 )
+texture = ExtResource( 3 )
+
+[node name="Floor" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="Roof" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="CSGCombiner" type="CSGCombiner" parent="."]
+
+[node name="CSGMesh" type="CSGMesh" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 4, 0 )
+mesh = SubResource( 4 )
+
+[node name="CSGMesh3" type="CSGMesh" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 4, -8 )
+operation = 2
+mesh = SubResource( 5 )
+
+[node name="CSGMesh4" type="CSGMesh" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 4, 9 )
+operation = 2
+mesh = SubResource( 5 )
+
+[node name="CSGMesh2" type="CSGMesh" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 4, 0 )
+mesh = SubResource( 4 )
+
+[node name="CSGMesh5" type="CSGMesh" parent="CSGCombiner"]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 4, 0 )
+mesh = SubResource( 4 )
+
+[node name="CSGBox" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 2.47, 0, 0, 0, 1, 0, 0, 0, 1, -10, 4, 0 )
+operation = 2
+width = 4.0
+height = 6.0
+
+[node name="MeshInstance2" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 4, 0 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="police_lights" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -29, -1, 17 )
+script = SubResource( 8 )
+
+[node name="SpotLight" type="SpotLight" parent="police_lights"]
+light_color = Color( 1, 0, 0, 1 )
+spot_range = 32.0
+
+[node name="SpotLight2" type="SpotLight" parent="police_lights"]
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0 )
+light_color = Color( 0, 0.439216, 1, 1 )
+spot_range = 32.0
+
+[node name="Spatial2" type="Spatial" parent="."]
+
+[node name="CSGCombiner" type="CSGCombiner" parent="Spatial2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0 )
+
+[node name="CSGCylinder" type="CSGCylinder" parent="Spatial2/CSGCombiner"]
+transform = Transform( 0.486747, 0, 0.873543, 0, 1, 0, -0.873543, 0, 0.486747, -13.4836, 2, 2 )
+radius = 1.3
+height = 4.0
+smooth_faces = false
+
+[node name="CSGCylinder7" type="CSGCylinder" parent="Spatial2/CSGCombiner/CSGCylinder"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000198364, 1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder8" type="CSGCylinder" parent="Spatial2/CSGCombiner/CSGCylinder"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000200272, -1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder2" type="CSGCylinder" parent="Spatial2/CSGCombiner"]
+transform = Transform( 0.486747, 0, 0.873543, 0, 1, 0, -0.873543, 0, 0.486747, -10.4836, 2, 2 )
+radius = 1.3
+height = 4.0
+smooth_faces = false
+
+[node name="CSGCylinder7" type="CSGCylinder" parent="Spatial2/CSGCombiner/CSGCylinder2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000198364, 1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder8" type="CSGCylinder" parent="Spatial2/CSGCombiner/CSGCylinder2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000200272, -1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder5" type="CSGCylinder" parent="Spatial2/CSGCombiner"]
+transform = Transform( 0.75651, -0.5, -0.421535, -0.486747, -4.37114e-08, -0.873543, 0.436772, 0.866025, -0.243374, -8.48359, 1, 3 )
+radius = 1.3
+height = 4.0
+smooth_faces = false
+
+[node name="CSGCombiner3" type="CSGCombiner" parent="Spatial2/CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 5 )
+
+[node name="CSGTorus" type="CSGTorus" parent="Spatial2/CSGCombiner/CSGCombiner3"]
+transform = Transform( 9.1099e-09, 0.104205, 0.454494, 0.5, -1.09278e-08, 6.5135e-16, 1.98666e-08, 0.227247, -0.20841, 1.58288, 4, -4 )
+
+[node name="CSGTorus2" type="CSGTorus" parent="Spatial2/CSGCombiner/CSGCombiner3"]
+transform = Transform( -1.56118e-08, -0.178578, 0.349913, 0.5, -1.09278e-08, 6.5135e-16, 1.52952e-08, 0.174956, 0.357157, 4.28722, 3.68474, -2.82717 )
+
+[node name="CSGTorus3" type="CSGTorus" parent="Spatial2/CSGCombiner/CSGCombiner3"]
+transform = Transform( -0.119698, 0.0884409, 0.45209, 0.0491846, -0.229407, 0.192535, 0.482963, 0.045282, 0.092439, 3.23903, 0.533656, -1.58311 )
+
+[node name="CSGCombiner2" type="CSGCombiner" parent="Spatial2"]
+transform = Transform( 0.240684, 0.898244, -0.367735, -0.965926, 0.258819, 0, 0.0951768, 0.355205, 0.929931, -13, 0.385971, 8 )
+
+[node name="CSGBox" type="CSGBox" parent="Spatial2/CSGCombiner2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
+width = 1.2
+depth = 1.2
+
+[node name="CSGBox2" type="CSGBox" parent="Spatial2/CSGCombiner2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3892, 0 )
+width = 1.4
+height = 1.0
+depth = 1.4
+
+[node name="CSGBox3" type="CSGBox" parent="Spatial2/CSGCombiner2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9871, 0 )
+operation = 2
+width = 1.25
+height = 1.0
+depth = 1.25
+
+[node name="Spatial3" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0 )
+
+[node name="CSGCombiner" type="CSGCombiner" parent="Spatial3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0 )
+
+[node name="CSGCylinder" type="CSGCylinder" parent="Spatial3/CSGCombiner"]
+transform = Transform( 0.486747, 0, 0.873543, 0, 1, 0, -0.873543, 0, 0.486747, -13.4836, 2, 2 )
+radius = 1.3
+height = 4.0
+smooth_faces = false
+
+[node name="CSGCylinder7" type="CSGCylinder" parent="Spatial3/CSGCombiner/CSGCylinder"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000198364, 1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder8" type="CSGCylinder" parent="Spatial3/CSGCombiner/CSGCylinder"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000200272, -1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder2" type="CSGCylinder" parent="Spatial3/CSGCombiner"]
+transform = Transform( 0.486747, 0, 0.873543, 0, 1, 0, -0.873543, 0, 0.486747, -10.4836, 2, 2 )
+radius = 1.3
+height = 4.0
+smooth_faces = false
+
+[node name="CSGCylinder7" type="CSGCylinder" parent="Spatial3/CSGCombiner/CSGCylinder2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000198364, 1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder8" type="CSGCylinder" parent="Spatial3/CSGCombiner/CSGCylinder2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000200272, -1.5, -0.000355721 )
+radius = 1.4
+height = 0.1
+smooth_faces = false
+
+[node name="CSGCylinder5" type="CSGCylinder" parent="Spatial3/CSGCombiner"]
+transform = Transform( 0.75651, -0.5, -0.421535, -0.486747, -4.37114e-08, -0.873543, 0.436772, 0.866025, -0.243374, -8.48359, 1, 3 )
+radius = 1.3
+height = 4.0
+smooth_faces = false
+
+[node name="CSGCombiner3" type="CSGCombiner" parent="Spatial3/CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 5 )
+
+[node name="CSGTorus" type="CSGTorus" parent="Spatial3/CSGCombiner/CSGCombiner3"]
+transform = Transform( 9.1099e-09, 0.104205, 0.454494, 0.5, -1.09278e-08, 6.5135e-16, 1.98666e-08, 0.227247, -0.20841, 1.58288, 4, -4 )
+
+[node name="CSGTorus2" type="CSGTorus" parent="Spatial3/CSGCombiner/CSGCombiner3"]
+transform = Transform( -1.56118e-08, -0.178578, 0.349913, 0.5, -1.09278e-08, 6.5135e-16, 1.52952e-08, 0.174956, 0.357157, 4.28722, 3.68474, -2.82717 )
+
+[node name="CSGTorus3" type="CSGTorus" parent="Spatial3/CSGCombiner/CSGCombiner3"]
+transform = Transform( -0.119698, 0.0884409, 0.45209, 0.0491846, -0.229407, 0.192535, 0.482963, 0.045282, 0.092439, 3.23903, 0.533656, -1.58311 )
+
+[node name="CSGCombiner2" type="CSGCombiner" parent="Spatial3"]
+transform = Transform( 0.240684, 0.898244, -0.367735, -0.965926, 0.258819, 0, 0.0951768, 0.355205, 0.929931, -13, 0.385971, 8 )
+
+[node name="CSGBox" type="CSGBox" parent="Spatial3/CSGCombiner2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
+width = 1.2
+depth = 1.2
+
+[node name="CSGBox2" type="CSGBox" parent="Spatial3/CSGCombiner2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3892, 0 )
+width = 1.4
+height = 1.0
+depth = 1.4
+
+[node name="CSGBox3" type="CSGBox" parent="Spatial3/CSGCombiner2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9871, 0 )
+operation = 2
+width = 1.25
+height = 1.0
+depth = 1.25
+
+[node name="Spatial" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, 68 )
+script = SubResource( 10 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="SpotLight" type="SpotLight" parent="Spatial"]
+spot_range = 42.0

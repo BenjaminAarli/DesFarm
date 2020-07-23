@@ -1,0 +1,534 @@
+[gd_scene load_steps=35 format=2]
+
+[ext_resource path="res://textures/castle_tower_wall.png" type="Texture" id=1]
+[ext_resource path="res://textures/metal.jpg" type="Texture" id=2]
+[ext_resource path="res://textures/sun.png" type="Texture" id=3]
+[ext_resource path="res://plants/plant.tscn" type="PackedScene" id=4]
+[ext_resource path="res://test_scene/tst_straw_plant_placeholder.tscn" type="PackedScene" id=5]
+
+[sub_resource type="GDScript" id=28]
+script/source = "extends Spatial
+
+var is_false = false
+var t = 0
+var cam = 1
+
+
+
+func intro():
+	pass
+
+func _process(delta):
+	change_cam()
+	if Input.is_action_just_pressed(\"ui_accept\"):
+		if cam == 1: 
+			get_tree().change_scene(\"res://Game.tscn\")
+		
+		is_false = !is_false
+		t = 0
+		if cam < 3: 
+			cam += 1
+		else:
+			cam = 1
+	if cam == 1:
+		t += delta * 1.5
+		$Cameras/Camera0.global_transform = $Cameras/Camera0.global_transform.interpolate_with($Cameras/Camera2.global_transform, t)
+	elif cam == 2: 
+		t += delta * 1.5
+		$Cameras/Camera0.global_transform = $Cameras/Camera0.global_transform.interpolate_with($Cameras/Camera1.global_transform, t)
+	elif cam == 3: 
+		t += delta
+		$Cameras/Camera0.global_transform = $Cameras/Camera0.global_transform.interpolate_with($Cameras/Camera3.global_transform, t)
+
+func change_cam():
+	t = 0
+	if Input.is_action_just_pressed(\"ui_down\"):
+		if cam != 2: 
+			cam = 2
+		else: 
+			cam = 1
+	if Input.is_action_just_pressed(\"ui_up\"):
+		if cam != 1:
+			cam = 1
+		else: 
+			cam = 2
+	pass
+"
+
+[sub_resource type="Environment" id=23]
+background_mode = 1
+background_color = Color( 0.133333, 0.0235294, 0.0235294, 1 )
+ambient_light_color = Color( 0.25098, 0.25098, 0.25098, 1 )
+fog_enabled = true
+fog_color = Color( 0, 0, 0, 1 )
+fog_sun_color = Color( 1, 1, 1, 1 )
+fog_depth_begin = 1.0
+fog_transmit_enabled = true
+fog_height_enabled = true
+fog_height_min = 3.0
+fog_height_max = 10.0
+tonemap_mode = 2
+dof_blur_far_enabled = true
+dof_blur_far_distance = 1.75
+dof_blur_far_transition = 0.01
+dof_blur_far_amount = 0.11
+dof_blur_far_quality = 2
+adjustment_enabled = true
+adjustment_contrast = 8.0
+
+[sub_resource type="GDScript" id=29]
+script/source = "extends Camera
+
+
+func _ready():
+	environment.background_color = Color.seagreen
+	environment.adjustment_brightness = 0
+	environment.adjustment_contrast = 8
+	environment.background_color = Color.black
+	print(Color.blue)
+#	environment.adjustment_saturation = 0.0
+	pass
+var ti = 0
+var t = 0
+func _process(delta):
+	
+	t += delta / (10000 - ti)
+	if environment.background_color.b > Color.blue.b:
+		environment.background_color = environment.background_color.linear_interpolate(Color.blue, t)
+	print(environment.background_color)
+	if ti < 10000:
+		ti += 10000 * delta
+#	if environment.adjustment_saturation < 1: 
+#		environment.adjustment_saturation += 1 * delta
+	if environment.adjustment_contrast > 1: 
+		 environment.adjustment_contrast -= 6 * delta
+	elif environment.adjustment_brightness < 1:
+		environment.adjustment_brightness += 1.5 * delta
+	else:
+		get_parent().get_node(\"Camera0\").current = true
+		queue_free()
+	pass
+"
+
+[sub_resource type="OpenSimplexNoise" id=24]
+period = 27.0
+
+[sub_resource type="NoiseTexture" id=25]
+seamless = true
+noise = SubResource( 24 )
+
+[sub_resource type="SpatialMaterial" id=26]
+albedo_color = Color( 0.0862745, 0.196078, 0.0509804, 1 )
+albedo_texture = SubResource( 25 )
+uv1_triplanar = true
+
+[sub_resource type="PlaneMesh" id=27]
+material = SubResource( 26 )
+size = Vector2( 500, 500 )
+
+[sub_resource type="SpatialMaterial" id=6]
+flags_unshaded = true
+params_billboard_mode = 2
+
+[sub_resource type="QuadMesh" id=7]
+material = SubResource( 6 )
+size = Vector2( 0.05, 0.5 )
+
+[sub_resource type="SpatialMaterial" id=8]
+flags_unshaded = true
+flags_vertex_lighting = true
+flags_do_not_receive_shadows = true
+vertex_color_use_as_albedo = true
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id=9]
+material = SubResource( 8 )
+size = Vector2( 0.1, 0.05 )
+
+[sub_resource type="SpatialMaterial" id=19]
+albedo_texture = ExtResource( 1 )
+uv1_triplanar = true
+
+[sub_resource type="CubeMesh" id=10]
+material = SubResource( 19 )
+size = Vector3( 0.5, 2, 0.5 )
+
+[sub_resource type="SpatialMaterial" id=30]
+flags_transparent = true
+flags_unshaded = true
+flags_disable_ambient_light = true
+albedo_color = Color( 0.12549, 0.239216, 0.254902, 0.890196 )
+
+[sub_resource type="QuadMesh" id=31]
+material = SubResource( 30 )
+
+[sub_resource type="SpatialMaterial" id=32]
+albedo_color = Color( 0.368627, 0.368627, 0.368627, 1 )
+albedo_texture = ExtResource( 1 )
+uv1_triplanar = true
+
+[sub_resource type="SpatialMaterial" id=33]
+albedo_texture = ExtResource( 1 )
+
+[sub_resource type="SpatialMaterial" id=20]
+albedo_color = Color( 0.368627, 0.368627, 0.368627, 1 )
+albedo_texture = ExtResource( 1 )
+uv1_triplanar = true
+
+[sub_resource type="CubeMesh" id=11]
+material = SubResource( 20 )
+size = Vector3( 0.2, 2, 10 )
+
+[sub_resource type="SpatialMaterial" id=21]
+albedo_color = Color( 0.368627, 0.368627, 0.368627, 1 )
+albedo_texture = ExtResource( 1 )
+uv1_triplanar = true
+
+[sub_resource type="CubeMesh" id=12]
+material = SubResource( 21 )
+size = Vector3( 8, 2, 0.2 )
+
+[sub_resource type="SpatialMaterial" id=22]
+albedo_texture = ExtResource( 2 )
+
+[sub_resource type="CubeMesh" id=13]
+material = SubResource( 22 )
+size = Vector3( 2, 0.2, 0.2 )
+
+[sub_resource type="GDScript" id=14]
+script/source = "extends Spatial
+
+
+
+var rot_speed = 2
+var rotio = 1
+
+func _process(delta):
+	if rotation_degrees.x > 5:
+		rotio += -2 * delta
+	elif rotation_degrees.x < -5:
+		rotio += 2 * delta
+	
+	rotation_degrees.x += (rotio * rot_speed) * delta
+	pass
+"
+
+[sub_resource type="OpenSimplexNoise" id=16]
+period = 1.0
+
+[sub_resource type="NoiseTexture" id=17]
+flags = 2
+width = 32
+height = 32
+seamless = true
+noise = SubResource( 16 )
+
+[sub_resource type="SpatialMaterial" id=18]
+albedo_texture = SubResource( 17 )
+uv1_triplanar = true
+
+[sub_resource type="CubeMesh" id=15]
+material = SubResource( 18 )
+size = Vector3( 1.2, 0.5, 0.1 )
+
+[sub_resource type="BakedLightmapData" id=34]
+bounds = AABB( -6, -3, -6, 12, 6, 12 )
+cell_space_transform = Transform( 4, 0, 0, 0, 4, 0, 0, 0, 4, 24, 12, 24 )
+cell_subdiv = 7
+octree = PoolByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 )
+
+[node name="scn_mainmenu" type="Spatial"]
+script = SubResource( 28 )
+
+[node name="Cameras" type="Spatial" parent="."]
+
+[node name="Intro2" type="Camera" parent="Cameras"]
+transform = Transform( 0.967867, 0, 0.251461, 0, 1, 0, -0.251461, 0, 0.967867, -0.906385, 3.36641, -4.57932 )
+environment = SubResource( 23 )
+current = true
+far = 200.0
+script = SubResource( 29 )
+
+[node name="Camera0" type="Camera" parent="Cameras"]
+transform = Transform( 0.967867, 0, 0.251461, 0, 1, 0, -0.251461, 0, 0.967867, -0.906385, 3.36641, -4.57932 )
+environment = SubResource( 23 )
+far = 200.0
+
+[node name="Camera3" type="Camera" parent="Cameras"]
+transform = Transform( 0.935646, 0.264193, -0.234027, -0.209066, 0.9491, 0.235587, 0.284355, -0.171499, 0.943255, -11.6734, 0.916092, -5.02721 )
+environment = SubResource( 23 )
+far = 200.0
+
+[node name="Camera2" type="Camera" parent="Cameras"]
+transform = Transform( 0.967867, 0, 0.251461, 0, 1, 0, -0.251461, 0, 0.967867, -0.906385, 3.36641, -4.57932 )
+environment = SubResource( 23 )
+far = 200.0
+
+[node name="Camera1" type="Camera" parent="Cameras"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -1, 2, -5 )
+
+[node name="mesh" type="Spatial" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="mesh"]
+mesh = SubResource( 27 )
+material/0 = null
+
+[node name="Rain" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9.11324 )
+
+[node name="CPUParticles" type="CPUParticles" parent="Rain"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 72, 0 )
+amount = 8000
+lifetime = 5.0
+preprocess = 10.0
+randomness = 1.0
+mesh = SubResource( 7 )
+emission_shape = 2
+emission_box_extents = Vector3( 50, 1, 50 )
+flag_rotate_y = true
+
+[node name="CPUParticles2" type="CPUParticles" parent="Rain"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.152474, 0 )
+amount = 2000
+lifetime = 0.2
+mesh = SubResource( 9 )
+emission_shape = 2
+emission_box_extents = Vector3( 50, 0.1, 50 )
+flag_align_y = true
+flag_rotate_y = true
+direction = Vector3( 0, 1, 0 )
+gravity = Vector3( 0, -19.6, 0 )
+initial_velocity = 2.0
+
+[node name="house" type="Spatial" parent="."]
+
+[node name="fundation" type="Spatial" parent="house"]
+transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="house/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -6 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="MeshInstance2" type="MeshInstance" parent="house/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -16 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="MeshInstance3" type="MeshInstance" parent="house/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -6 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="MeshInstance4" type="MeshInstance" parent="house/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -16 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="walls" type="Spatial" parent="house"]
+transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="Spatial" type="Spatial" parent="house/walls"]
+transform = Transform( 1, 0, 0, 0, 0.5, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="house/walls/Spatial"]
+transform = Transform( -7.15256e-07, 0, 1, 0, 3.21869, 0, -7.8, 0, -5.96046e-08, -2, 2.41388, -11 )
+use_in_baked_light = true
+mesh = SubResource( 31 )
+material/0 = null
+
+[node name="MeshInstance2" type="MeshInstance" parent="house/walls/Spatial/MeshInstance"]
+transform = Transform( -1, 0, 1.1208e-08, 0, 1, 0, -6.81898e-07, 0, -1, -0.0131701, 0, 0 )
+use_in_baked_light = true
+mesh = SubResource( 31 )
+material/0 = null
+
+[node name="CSGCombiner" type="CSGCombiner" parent="house/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -11 )
+use_in_baked_light = true
+
+[node name="CSGBox" type="CSGBox" parent="house/walls/CSGCombiner"]
+use_in_baked_light = true
+width = 0.2
+depth = 10.0
+material = SubResource( 32 )
+
+[node name="CSGBox2" type="CSGBox" parent="house/walls/CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.220343, 2.2149 )
+use_in_baked_light = true
+operation = 2
+width = 0.97
+height = 0.97
+depth = 3.442
+material = SubResource( 33 )
+
+[node name="CSGBox3" type="CSGBox" parent="house/walls/CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.220343, -1.7851 )
+use_in_baked_light = true
+operation = 2
+width = 0.97
+height = 0.97
+depth = 3.442
+material = SubResource( 33 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="house/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -11 )
+mesh = SubResource( 11 )
+material/0 = null
+
+[node name="MeshInstance3" type="MeshInstance" parent="house/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -16 )
+mesh = SubResource( 12 )
+material/0 = null
+
+[node name="MeshInstance4" type="MeshInstance" parent="house/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -6 )
+use_in_baked_light = true
+mesh = SubResource( 12 )
+material/0 = null
+
+[node name="Sign" type="Spatial" parent="house"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 4, -6 )
+
+[node name="MeshInstance" type="MeshInstance" parent="house/Sign"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.863153, -0.138645, 0 )
+mesh = SubResource( 13 )
+material/0 = null
+
+[node name="Spatial" type="Spatial" parent="house/Sign"]
+transform = Transform( 1, 0, 0, 0, 0.999997, -0.00240855, 0, 0.00240855, 0.999997, 1.15117, -0.272778, -0.000454903 )
+script = SubResource( 14 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="house/Sign/Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.260964, 0 )
+mesh = SubResource( 15 )
+material/0 = null
+
+[node name="Sprite3D" type="Sprite3D" parent="house/Sign/Spatial/MeshInstance2"]
+transform = Transform( 1, 0, 0, 0, 1, -2.32831e-10, 0, 2.32831e-10, 1, 0, 0, 0.0549688 )
+shaded = true
+double_sided = false
+texture = ExtResource( 3 )
+
+[node name="Spatial2" type="Spatial" parent="house/Sign/Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.552035, 0 )
+script = SubResource( 14 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="house/Sign/Spatial/Spatial2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.260964, 0 )
+mesh = SubResource( 15 )
+material/0 = null
+
+[node name="Sprite3D" type="Sprite3D" parent="house/Sign/Spatial/Spatial2/MeshInstance2"]
+transform = Transform( 1, 0, 0, 0, 1, 2.32831e-10, 0, -2.32831e-10, 1, 0, 0, 0.0558157 )
+shaded = true
+double_sided = false
+texture = ExtResource( 3 )
+
+[node name="house2" type="Spatial" parent="house"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0 )
+
+[node name="fundation" type="Spatial" parent="house/house2"]
+transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="house/house2/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -6 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="MeshInstance2" type="MeshInstance" parent="house/house2/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -16 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="MeshInstance3" type="MeshInstance" parent="house/house2/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -6 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="MeshInstance4" type="MeshInstance" parent="house/house2/fundation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -16 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="walls" type="Spatial" parent="house/house2"]
+transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="house/house2/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, -11 )
+mesh = SubResource( 11 )
+material/0 = null
+
+[node name="MeshInstance2" type="MeshInstance" parent="house/house2/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -11 )
+mesh = SubResource( 11 )
+material/0 = null
+
+[node name="MeshInstance3" type="MeshInstance" parent="house/house2/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -16 )
+mesh = SubResource( 12 )
+material/0 = null
+
+[node name="MeshInstance4" type="MeshInstance" parent="house/house2/walls"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -6 )
+mesh = SubResource( 12 )
+material/0 = null
+
+[node name="Ground" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -5 )
+
+[node name="plant" parent="Ground" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0930741, -0.38965, 0 )
+
+[node name="plant2" parent="Ground" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.557823, -0.620972, 0.48358 )
+
+[node name="plant3" parent="Ground" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.557823, -0.620972, -1.51642 )
+
+[node name="plant4" parent="Ground" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.44218, -0.620972, -0.850326 )
+
+[node name="plant5" parent="Ground" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.41967, -0.727192, -0.525971 )
+
+[node name="plant6" parent="Ground" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6.53413, -0.727192, -0.614531 )
+
+[node name="plant7" parent="Ground" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 0.878644, 0, 0, 0, 1, -1.97968, -0.532929, 1.42484 )
+
+[node name="Sprite3D" type="Sprite3D" parent="Ground"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.55075, 0 )
+texture = ExtResource( 3 )
+
+[node name="SpotLight" type="SpotLight" parent="Ground"]
+transform = Transform( 1, 0, 0, 0, -0.662097, 0.749418, 0, -0.749418, -0.662097, 0, 3.22175, -2 )
+
+[node name="BackAlley" type="Spatial" parent="."]
+
+[node name="Plant" parent="BackAlley" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 0.2, 0, 0, 0, 1, -11, 0, -8 )
+
+[node name="OmniLight" type="OmniLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.97489, 1.21138, -11 )
+light_energy = 16.0
+omni_range = 5.03144
+
+[node name="BakedLightmap" type="BakedLightmap" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 3, -11.1059 )
+bake_extents = Vector3( 6, 3, 13 )
+light_data = SubResource( 34 )
+
+[node name="SpotLight" type="SpotLight" parent="."]
+transform = Transform( 0.581488, -0.472594, -0.662214, -0.153733, 0.735481, -0.659874, 0.798898, 0.485513, 0.35502, -5, 0, -3 )
+light_color = Color( 1, 0.901961, 0.901961, 1 )
+light_energy = 2.0
+light_specular = 0.0
+light_bake_mode = 2
+shadow_color = Color( 1, 1, 1, 1 )
+spot_range = 7.1
+spot_angle = 23.6

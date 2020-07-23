@@ -1,0 +1,15 @@
+extends Node
+
+## This script is for the naming convention used for the game.
+## I've noticed that I, by not having a naming convention make work...
+## ... a lot more unorganized than hoped for. 
+
+## As such, I have started this guide to avoid evolving this issue. 
+
+# Prefixes
+# obj_"Name" is for objects
+# scn_"Name" is for generic scenes. 
+# map_"Name" is for level scenes. 
+# usr_"Name" is for User controlled content F.Ex. Player Characters. 
+# tst_"Name" is for testing environments, ideas or anything else testing related.
+

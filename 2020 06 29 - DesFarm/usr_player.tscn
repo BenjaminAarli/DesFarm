@@ -1,0 +1,89 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://usr_player.gd" type="Script" id=1]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 1, 2, 1 )
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_unshaded = true
+
+[sub_resource type="CubeMesh" id=3]
+material = SubResource( 2 )
+
+[sub_resource type="CubeMesh" id=4]
+
+[sub_resource type="CubeMesh" id=5]
+
+[node name="player" type="KinematicBody" groups=[
+"players",
+]]
+transform = Transform( 1, 0, 2.38418e-07, 0, 1, 0, -2.38418e-07, 0, 1, -1.66893e-06, 3, -6 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 1 )
+
+[node name="hideonload" type="Spatial" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="hideonload"]
+transform = Transform( 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="MeshInstance2" type="MeshInstance" parent="hideonload"]
+transform = Transform( 0.12, 0, 0, 0, 2.002, 0, 0, 0, 0.96, -1, 0, 4.76837e-07 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="Pivot" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.298, 2.011, -0.079 )
+
+[node name="Camera" type="Camera" parent="Pivot"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, -0.000257969, -1.7643e-05, -5.24521e-06 )
+far = 500.0
+
+[node name="UI" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="UI"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -2.0
+margin_top = -2.0
+margin_right = 2.0
+margin_bottom = 2.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="UI"]
+margin_top = 448.0
+margin_right = 1024.0
+margin_bottom = 512.0
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="carry" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -4.76837e-07 )
+
+[node name="placement" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -2, -1.43051e-06 )
+
+[node name="MeshInstance" type="MeshInstance" parent="placement"]
+mesh = SubResource( 5 )
+material/0 = null

@@ -1,0 +1,115 @@
+[gd_scene load_steps=5 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode unshaded;
+
+float hash(vec2 p){
+	return fract(sin(dot(p * 17.17, vec2(14.91, 67.31))) * 4791.9511);
+}
+
+float noise(vec2 x){
+	vec2 p = floor(x);
+	vec2 f = fract(x);
+	f = f*f*(3.0 - 2.0 * f);
+	vec2 a = vec2(1.0, 0.4);
+	return mix(
+				mix(
+					hash(p + a.yy), 
+					hash(p + a.xy), 
+					f.x),
+		  	 mix(
+					hash(p + a.yx), 
+					hash(p + a.xx), 
+					f.x), 
+			f.y);
+}
+
+float fbm(vec2 x){
+	float height = 0.0;
+	float amplitude = 0.5;
+	float frequency = 3.0;
+	float first_ = 0.0;
+	float last_ = 0.0;
+	height += noise(x * frequency) * amplitude;
+	amplitude *= 0.8;
+	frequency *= 20.0;
+	return height;
+}
+
+
+void vertex(){
+	
+	float height = fbm(VERTEX.xz * 4.0);
+	VERTEX.y += height * 0.5;
+	COLOR.xyz = vec3(height);
+	
+	if (VERTEX.y > 0.15){
+		VERTEX.x += sin(VERTEX.y * TIME) / 50.0
+	}
+}
+
+void fragment(){
+	ALBEDO = COLOR.xyz + vec3(0.0, -1.0, 0.0);
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+
+[sub_resource type="PlaneMesh" id=3]
+material = SubResource( 2 )
+size = Vector2( 20, 20 )
+subdivide_width = 320
+subdivide_depth = 320
+
+[sub_resource type="Environment" id=4]
+
+[node name="Spatial" type="Spatial"]
+
+[node name="ShadedMesh" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.472313, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh2" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -0.472313, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh3" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, -0.472313, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh4" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.472313, 20 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh5" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -0.472313, 20 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh6" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, -0.472313, 20 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh7" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.472313, -20 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh8" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -0.472313, -20 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="ShadedMesh9" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, -0.472313, -20 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 4 )

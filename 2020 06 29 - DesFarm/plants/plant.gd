@@ -79,7 +79,6 @@ func _on_Area_body_exited(body):
 			body.get_node("UI/Label").text = ""
 	pass # Replace with function body.
 
-
 func _on_Timer_timeout():
 	if growth != max_growth:
 		growth += 1

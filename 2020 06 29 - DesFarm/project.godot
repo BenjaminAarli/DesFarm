@@ -207,8 +207,16 @@ _global_script_class_icons={
 [application]
 
 config/name="2020 06 29 - Qodot Build Engine"
-run/main_scene="res://Game.tscn"
+run/main_scene="res://tst_scn_selectScreen.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+NamingConvention="*res://_naming_convention.gd"
+
+[display]
+
+window/size/always_on_top=true
 
 [editor_plugins]
 
